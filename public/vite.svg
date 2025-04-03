@@ -1,0 +1,22 @@
+<svg 
+    width="150px" 
+    height="150px" 
+    viewBox="0 0 24 24" 
+    fill="none" 
+    xmlns="http://www.w3.org/2000/svg"
+>
+    <!-- Tela da plataforma -->
+    <rect x="2" y="5" width="20" height="12" rx="2" fill="#2196F3" stroke="#37474F" stroke-width="2"/>
+    
+    <!-- Base do suporte -->
+    <path d="M6 19h12" stroke="#37474F" stroke-width="2" stroke-linecap="round"/>
+    <path d="M8 19v2M16 19v2" stroke="#37474F" stroke-width="2" stroke-linecap="round"/>
+    
+    <!-- Megafone -->
+    <path d="M14 10l4-2v6l-4-2V10z" fill="#F44336"/>
+    <path d="M14 10H8M8 14V6" stroke="#F44336" stroke-width="2"/>
+    
+    <!-- Sinal Wi-Fi -->
+    <path d="M19 3c1.5 1 2.5 2.5 2.5 4" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"/>
+    <path d="M19 6c0.5 0.5 1 1 1 2" stroke="#4CAF50" stroke-width="2" stroke-linecap="round"/>
+</svg>
