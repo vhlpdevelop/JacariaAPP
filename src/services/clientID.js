@@ -1,7 +1,7 @@
 // clientService.js
 import axios from 'axios';
 
-const API_URL = 'https://bonify-api-production.up.railway.app/hotspot'; // URL da sua API
+const API_URL = 'https://serverjacaria.onrender.com/hotspot'; // URL da sua API
 
 // Função para obter ou gerar o clientId
 export const getOrGenerateClientId = async () => {
