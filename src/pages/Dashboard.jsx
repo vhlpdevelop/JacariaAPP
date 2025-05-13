@@ -6,7 +6,7 @@ import Header from '../components/Header';
 import { useAuth } from '../contexts/AuthContext';
 
 const Dashboard = () => {
-  const { user, sensors } = useAuth();
+  const { user, sensors, userRoutes } = useAuth();
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const [sidebarOpen, setSidebarOpen] = useState(false);

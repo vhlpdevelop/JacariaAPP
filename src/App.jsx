@@ -13,6 +13,7 @@ import DashboardIndex from './pages/DashboardIndex';
 import Reports from './pages/Reports';
 import Settings from './pages/Settings';
 import Monitoramento from './pages/Monitoramento';
+import SensorDetailPage from './pages/SensorDetailPage';
 import { AuthProvider } from './contexts/AuthContext';
 
 const App = () => {
@@ -114,7 +115,20 @@ const App = () => {
                   <Route path="reports" element={<Reports />} />
                   <Route path="settings" element={<Settings />} />
                   <Route path="monitoring" element={<Monitoramento />} />
+                  <Route path="sensor/:id" element={<SensorDetailPage />} />
                 </Route>
+                
+                {/* Redirecionamento para login caso não autenticado */}
+                <Route 
+                  path="*" 
+                  element={
+                    isAuthenticated ? (
+                      <Navigate to="/dashboard" replace />
+                    ) : (
+                      <Navigate to="/login" replace />
+                    )
+                  } 
+                />
               </Routes>
             </AuthProvider>
           }

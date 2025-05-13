@@ -11,24 +11,46 @@ import {
   Typography,
   Divider,
   CircularProgress,
-  useTheme
+  useTheme,
+  useMediaQuery,
+  IconButton,
+  Drawer
 } from '@mui/material';
 import {
   Home as HomeIcon,
   BarChart as BarChartIcon,
   Settings as SettingsIcon,
   Sensors as SensorsIcon,
-  ExitToApp as LogoutIcon
+  ExitToApp as LogoutIcon,
+  Menu as MenuIcon
 } from '@mui/icons-material';
 import { useAuth } from '../contexts/AuthContext';
 
 const Sidebar = () => {
   const navigate = useNavigate();
   const theme = useTheme();
-  const { user: contextUser, logout } = useAuth();
+  const { user: contextUser, logout, userRoutes } = useAuth();
   const [displayUser, setDisplayUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
   const drawerWidth = 240;
+
+  const handleDrawerToggle = () => {
+    setMobileOpen(!mobileOpen);
+  };
+
+  // Função para mapear strings de ícones para componentes
+  const getIconComponent = (iconName) => {
+    const iconMap = {
+      HomeIcon: <HomeIcon />,
+      SensorsIcon: <SensorsIcon />,
+      BarChartIcon: <BarChartIcon />,
+      SettingsIcon: <SettingsIcon />,
+      LogoutIcon: <LogoutIcon />
+    };
+    return iconMap[iconName] || <HomeIcon />; // Ícone padrão caso o nome não seja encontrado
+  };
 
   // Sistema de fallback para os dados do usuário
   useEffect(() => {
@@ -36,23 +58,18 @@ const Sidebar = () => {
       try {
         setLoading(true);
         
-        // 1. Tentar usar os dados do contexto
         if (contextUser) {
-          console.log('Usando usuário do contexto:', contextUser);
           setDisplayUser(contextUser);
           return;
         }
 
-        // 2. Fallback para localStorage
         const storedUser = localStorage.getItem('user');
         if (storedUser) {
-          console.log('Fallback para localStorage - usuário:', storedUser);
           const parsedUser = JSON.parse(storedUser);
           setDisplayUser(parsedUser);
           return;
         }
 
-        // 3. Fallback mínimo
         setDisplayUser({
           name: 'Usuário',
           email: ''
@@ -71,13 +88,6 @@ const Sidebar = () => {
     loadUserData();
   }, [contextUser]);
 
-  const menuItems = [
-    { text: 'Início', icon: <HomeIcon />, path: '/dashboard' },
-    { text: 'Monitoramento', icon: <SensorsIcon />, path: '/dashboard/monitoring' },
-    { text: 'Relatórios', icon: <BarChartIcon />, path: '/dashboard/reports' },
-    { text: 'Configurações', icon: <SettingsIcon />, path: '/dashboard/settings' }
-  ];
-
   if (loading) {
     return (
       <Box sx={{ 
@@ -92,24 +102,9 @@ const Sidebar = () => {
     );
   }
 
-  return (
-    <Box 
-      component="nav"
-      sx={{ 
-        width: drawerWidth,
-        flexShrink: 0,
-        display: 'flex',
-        flexDirection: 'column',
-        height: '100vh',
-        borderRight: `1px solid ${theme.palette.divider}`,
-        bgcolor: 'background.paper',
-        position: 'fixed', // Fixa a sidebar na tela
-        overflow: 'auto' // Permite rolagem se o conteúdo for muito longo
-      }}
-    >
-      {/* Conteúdo principal (cabeçalho + menu) */}
+  const drawerContent = (
+    <>
       <Box sx={{ flex: '1 0 auto' }}>
-        {/* Cabeçalho com informações do usuário */}
         <Box sx={{ 
           display: 'flex', 
           flexDirection: 'column', 
@@ -139,12 +134,14 @@ const Sidebar = () => {
 
         <Divider sx={{ my: 1 }} />
 
-        {/* Menu de navegação */}
         <List>
-          {menuItems.map((item) => (
-            <ListItem key={item.text} disablePadding>
+          {userRoutes.map((route) => (
+            <ListItem key={route.name} disablePadding>
               <ListItemButton 
-                onClick={() => navigate(item.path)}
+                onClick={() => {
+                  navigate(route.path);
+                  if (isMobile) setMobileOpen(false);
+                }}
                 sx={{
                   borderRadius: 1,
                   mx: 1,
@@ -160,10 +157,10 @@ const Sidebar = () => {
                 }}
               >
                 <ListItemIcon sx={{ color: 'text.secondary' }}>
-                  {item.icon}
+                  {getIconComponent(route.icon)}
                 </ListItemIcon>
                 <ListItemText 
-                  primary={item.text} 
+                  primary={route.name} 
                   primaryTypographyProps={{ fontSize: '0.875rem' }}
                 />
               </ListItemButton>
@@ -172,7 +169,6 @@ const Sidebar = () => {
         </List>
       </Box>
 
-      {/* Botão de logout (fixo no final) */}
       <Box sx={{ 
         p: 2,
         position: 'sticky',
@@ -204,7 +200,71 @@ const Sidebar = () => {
           </ListItemButton>
         </ListItem>
       </Box>
-    </Box>
+    </>
+  );
+
+  return (
+    <>
+      {/* Botão de menu para mobile */}
+      {isMobile && (
+        <IconButton
+          color="inherit"
+          aria-label="open drawer"
+          edge="start"
+          onClick={handleDrawerToggle}
+          sx={{
+            position: 'fixed',
+            mt: 4,
+            top: 16,
+            left: 16,
+            zIndex: theme.zIndex.drawer + 1,
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+      )}
+
+      {/* Sidebar para desktop - versão original que acompanha o scroll */}
+      {!isMobile && (
+        <Box 
+          component="nav"
+          sx={{ 
+            width: drawerWidth,
+            flexShrink: 0,
+            display: { xs: 'none', sm: 'flex' },
+            flexDirection: 'column',
+            height: '100vh',
+            borderRight: `1px solid ${theme.palette.divider}`,
+            bgcolor: 'background.paper',
+            position: 'fixed',
+            overflow: 'auto'
+          }}
+        >
+          {drawerContent}
+        </Box>
+      )}
+
+      {/* Drawer para mobile */}
+      <Drawer
+        variant="temporary"
+        open={mobileOpen}
+        onClose={handleDrawerToggle}
+        ModalProps={{
+          keepMounted: true,
+        }}
+        sx={{
+          display: { xs: 'block', sm: 'none' },
+          '& .MuiDrawer-paper': {
+            boxSizing: 'border-box',
+            width: drawerWidth,
+            borderRight: `1px solid ${theme.palette.divider}`,
+            bgcolor: 'background.paper'
+          }
+        }}
+      >
+        {drawerContent}
+      </Drawer>
+    </>
   );
 };
 

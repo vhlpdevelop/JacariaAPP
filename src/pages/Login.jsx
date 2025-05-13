@@ -51,7 +51,7 @@ const Login = () => {
       console.log('Resposta completa da API:', response);
 
       if (response.data && response.data.ok) {
-        const { token, user, sensors } = response.data;
+        const { token, user, sensors, userRoutes } = response.data;
         
         console.log('Dados recebidos:', { 
           token, 
@@ -64,9 +64,10 @@ const Login = () => {
         console.log('Dados antes do login:', {
           token: token,
           user: user,
-          sensors: sensors
+          sensors: sensors,
+          userRoutes:userRoutes
         });
-        login(token, user, sensors);
+        login(token, user, sensors, userRoutes);
         navigate('/dashboard');
       } else {
         const errorMsg = response.data?.msg || 'Credenciais inválidas';
